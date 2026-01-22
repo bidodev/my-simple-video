@@ -10,998 +10,239 @@ import {
 
 export const PandaReunion: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, durationInFrames } = useVideoConfig();
 
   return (
     <AbsoluteFill
       style={{
-        background: "linear-gradient(180deg, #ffecd2 0%, #fcb69f 50%, #ffeaa7 100%)",
+        background: "linear-gradient(180deg, #ffe4ec 0%, #ffd1dc 40%, #ffb6c1 100%)",
         overflow: "hidden",
       }}
     >
-      {/* Cute clouds */}
-      <Cloud x={100} y={80} size={120} delay={0} />
-      <Cloud x={400} y={120} size={80} delay={10} />
-      <Cloud x={1400} y={60} size={100} delay={5} />
-      <Cloud x={1650} y={140} size={70} delay={15} />
+      {/* Soft pastel clouds */}
+      <SoftCloud x={80} y={100} size={140} />
+      <SoftCloud x={500} y={60} size={100} />
+      <SoftCloud x={1300} y={80} size={120} />
+      <SoftCloud x={1600} y={140} size={90} />
 
-      {/* Sun */}
-      <CuteSun />
+      {/* Cute sun */}
+      <KawaiiSun />
 
-      {/* Ground/grass */}
+      {/* Soft grass hills */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           width: "100%",
-          height: 300,
-          background: "linear-gradient(180deg, #a8e6cf 0%, #88d8b0 100%)",
-          borderRadius: "50% 50% 0 0 / 30% 30% 0 0",
+          height: 350,
+          background: "linear-gradient(180deg, #98e4b9 0%, #7dd3a8 100%)",
+          borderRadius: "60% 60% 0 0 / 40% 40% 0 0",
+        }}
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: -100,
+          width: "60%",
+          height: 280,
+          background: "#8dd9a8",
+          borderRadius: "0 80% 0 0 / 0 100% 0 0",
         }}
       />
 
-      {/* Flowers */}
-      {[...Array(12)].map((_, i) => (
-        <Flower
+      {/* Small flowers */}
+      {[...Array(8)].map((_, i) => (
+        <SmallFlower
           key={i}
-          x={80 + i * 160}
-          delay={i * 3}
-          color={["#ff9ff3", "#feca57", "#ff6b6b", "#48dbfb"][i % 4]}
+          x={120 + i * 220}
+          color={["#ffb7d5", "#ffe066", "#b5e8ff", "#d4b5ff"][i % 4]}
+          delay={i * 5}
         />
       ))}
 
-      {/* Laura (left panda) running right */}
-      <Sequence from={0} premountFor={fps}>
-        <LauraPanda />
+      {/* Laura panda */}
+      <Sequence from={0} premountFor={30}>
+        <KawaiiPanda
+          name="Laura"
+          startX={-200}
+          endX={750}
+          facingRight
+          accessoryColor="#ff8fab"
+          delay={0}
+        />
       </Sequence>
 
-      {/* Bido (right panda) running left */}
-      <Sequence from={0} premountFor={fps}>
-        <BidoPanda />
+      {/* Bido panda */}
+      <Sequence from={0} premountFor={30}>
+        <KawaiiPanda
+          name="Bido"
+          startX={2100}
+          endX={1050}
+          facingRight={false}
+          accessoryColor="#89cff0"
+          delay={5}
+        />
       </Sequence>
 
-      {/* Hearts appear during hug */}
-      <Sequence from={90} premountFor={fps}>
-        <FloatingHearts />
+      {/* Jordi the dog */}
+      <Sequence from={50} premountFor={30}>
+        <KawaiiDog />
       </Sequence>
 
-      {/* Jordi the golden retriever */}
-      <Sequence from={60} premountFor={fps}>
-        <JordiDog />
+      {/* Hearts */}
+      <Sequence from={85} premountFor={30}>
+        <CuteHearts />
       </Sequence>
 
-      {/* Text */}
-      <Sequence from={120} premountFor={fps}>
-        <ReunionText />
-      </Sequence>
-
-      {/* Sparkles */}
-      <Sequence from={90} premountFor={fps}>
-        <Sparkles />
+      {/* Title */}
+      <Sequence from={110} premountFor={30}>
+        <CuteTitle />
       </Sequence>
     </AbsoluteFill>
   );
 };
 
-// Laura Panda - runs from left
-const LauraPanda: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  // Run from left to center
-  const runProgress = interpolate(frame, [0, 80], [0, 1], {
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.quad),
-  });
-
-  const x = interpolate(runProgress, [0, 1], [-100, 860]);
-
-  // Bouncy run animation
-  const bounce = Math.sin(frame * 0.5) * 8;
-  const legSwing = Math.sin(frame * 0.5) * 15;
-
-  // Hug animation - arms open then close
-  const hugProgress = interpolate(frame, [75, 95], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const armAngle = interpolate(hugProgress, [0, 1], [-30, 45]);
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: x,
-        bottom: 280 + bounce,
-        transform: "scaleX(1)",
-      }}
-    >
-      <PandaCharacter
-        name="Laura"
-        armAngle={armAngle}
-        legAngle={legSwing}
-        hasBowtie
-        bowtieColor="#ff6b9d"
-        eyeStyle="cute"
-      />
-    </div>
-  );
-};
-
-// Bido Panda - runs from right
-const BidoPanda: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  // Run from right to center
-  const runProgress = interpolate(frame, [0, 80], [0, 1], {
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.quad),
-  });
-
-  const x = interpolate(runProgress, [0, 1], [1920, 960]);
-
-  // Bouncy run animation (offset from Laura)
-  const bounce = Math.sin(frame * 0.5 + Math.PI) * 8;
-  const legSwing = Math.sin(frame * 0.5 + Math.PI) * 15;
-
-  // Hug animation
-  const hugProgress = interpolate(frame, [75, 95], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  const armAngle = interpolate(hugProgress, [0, 1], [30, -45]);
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: x,
-        bottom: 280 + bounce,
-        transform: "scaleX(-1)",
-      }}
-    >
-      <PandaCharacter
-        name="Bido"
-        armAngle={armAngle}
-        legAngle={legSwing}
-        hasBowtie
-        bowtieColor="#5f9ea0"
-        eyeStyle="happy"
-      />
-    </div>
-  );
-};
-
-// Reusable Panda Character
-const PandaCharacter: React.FC<{
+// Kawaii Panda with SVG
+const KawaiiPanda: React.FC<{
   name: string;
-  armAngle: number;
-  legAngle: number;
-  hasBowtie?: boolean;
-  bowtieColor?: string;
-  eyeStyle: "cute" | "happy";
-}> = ({ name, armAngle, legAngle, hasBowtie, bowtieColor, eyeStyle }) => {
-  const frame = useCurrentFrame();
-
-  // Blinking
-  const blinkCycle = frame % 120;
-  const isBlinking = blinkCycle > 115 && blinkCycle < 120;
-
-  return (
-    <div style={{ position: "relative", width: 120, height: 160 }}>
-      {/* Body */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 30,
-          left: 20,
-          width: 80,
-          height: 90,
-          background: "white",
-          borderRadius: "45% 45% 50% 50%",
-          border: "3px solid #333",
-        }}
-      />
-
-      {/* Belly patch */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 40,
-          left: 35,
-          width: 50,
-          height: 60,
-          background: "#f5f5f5",
-          borderRadius: "50%",
-        }}
-      />
-
-      {/* Left leg */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 25,
-          width: 25,
-          height: 35,
-          background: "#333",
-          borderRadius: "40%",
-          transformOrigin: "top center",
-          transform: `rotate(${legAngle}deg)`,
-        }}
-      />
-
-      {/* Right leg */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 0,
-          left: 70,
-          width: 25,
-          height: 35,
-          background: "#333",
-          borderRadius: "40%",
-          transformOrigin: "top center",
-          transform: `rotate(${-legAngle}deg)`,
-        }}
-      />
-
-      {/* Left arm */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 70,
-          left: 5,
-          width: 25,
-          height: 45,
-          background: "#333",
-          borderRadius: "40%",
-          transformOrigin: "top center",
-          transform: `rotate(${armAngle}deg)`,
-        }}
-      />
-
-      {/* Right arm */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 70,
-          left: 90,
-          width: 25,
-          height: 45,
-          background: "#333",
-          borderRadius: "40%",
-          transformOrigin: "top center",
-          transform: `rotate(${-armAngle}deg)`,
-        }}
-      />
-
-      {/* Head */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 100,
-          left: 10,
-          width: 100,
-          height: 90,
-          background: "white",
-          borderRadius: "50%",
-          border: "3px solid #333",
-        }}
-      />
-
-      {/* Left ear */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 170,
-          left: 5,
-          width: 35,
-          height: 35,
-          background: "#333",
-          borderRadius: "50%",
-        }}
-      />
-
-      {/* Right ear */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 170,
-          left: 80,
-          width: 35,
-          height: 35,
-          background: "#333",
-          borderRadius: "50%",
-        }}
-      />
-
-      {/* Left eye patch */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 140,
-          left: 18,
-          width: 35,
-          height: 30,
-          background: "#333",
-          borderRadius: "50%",
-          transform: "rotate(-10deg)",
-        }}
-      />
-
-      {/* Right eye patch */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 140,
-          left: 67,
-          width: 35,
-          height: 30,
-          background: "#333",
-          borderRadius: "50%",
-          transform: "rotate(10deg)",
-        }}
-      />
-
-      {/* Eyes */}
-      {!isBlinking ? (
-        <>
-          {/* Left eye */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 148,
-              left: 28,
-              width: 16,
-              height: eyeStyle === "happy" ? 8 : 16,
-              background: eyeStyle === "happy" ? "transparent" : "white",
-              borderRadius: eyeStyle === "happy" ? "0 0 50% 50%" : "50%",
-              border: eyeStyle === "happy" ? "3px solid white" : "none",
-              borderTop: eyeStyle === "happy" ? "none" : "none",
-            }}
-          >
-            {eyeStyle === "cute" && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 3,
-                  left: 3,
-                  width: 8,
-                  height: 8,
-                  background: "#333",
-                  borderRadius: "50%",
-                }}
-              />
-            )}
-          </div>
-
-          {/* Right eye */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 148,
-              left: 76,
-              width: 16,
-              height: eyeStyle === "happy" ? 8 : 16,
-              background: eyeStyle === "happy" ? "transparent" : "white",
-              borderRadius: eyeStyle === "happy" ? "0 0 50% 50%" : "50%",
-              border: eyeStyle === "happy" ? "3px solid white" : "none",
-              borderTop: eyeStyle === "happy" ? "none" : "none",
-            }}
-          >
-            {eyeStyle === "cute" && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 3,
-                  left: 5,
-                  width: 8,
-                  height: 8,
-                  background: "#333",
-                  borderRadius: "50%",
-                }}
-              />
-            )}
-          </div>
-        </>
-      ) : (
-        <>
-          {/* Closed eyes */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: 152,
-              left: 28,
-              width: 16,
-              height: 3,
-              background: "white",
-              borderRadius: 2,
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              bottom: 152,
-              left: 76,
-              width: 16,
-              height: 3,
-              background: "white",
-              borderRadius: 2,
-            }}
-          />
-        </>
-      )}
-
-      {/* Nose */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 130,
-          left: 50,
-          width: 18,
-          height: 12,
-          background: "#333",
-          borderRadius: "50%",
-        }}
-      />
-
-      {/* Smile */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 115,
-          left: 42,
-          width: 35,
-          height: 18,
-          borderRadius: "0 0 50% 50%",
-          border: "3px solid #333",
-          borderTop: "none",
-          background: "transparent",
-        }}
-      />
-
-      {/* Blush */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: 125,
-          left: 12,
-          width: 20,
-          height: 12,
-          background: "#ffb6c1",
-          borderRadius: "50%",
-          opacity: 0.7,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: 125,
-          left: 88,
-          width: 20,
-          height: 12,
-          background: "#ffb6c1",
-          borderRadius: "50%",
-          opacity: 0.7,
-        }}
-      />
-
-      {/* Bowtie or accessory */}
-      {hasBowtie && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: 95,
-            left: 45,
-            width: 30,
-            height: 20,
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              width: 12,
-              height: 18,
-              background: bowtieColor,
-              borderRadius: "50%",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              right: 0,
-              width: 12,
-              height: 18,
-              background: bowtieColor,
-              borderRadius: "50%",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              left: 10,
-              top: 5,
-              width: 10,
-              height: 10,
-              background: bowtieColor,
-              borderRadius: "50%",
-            }}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Jordi the Golden Retriever
-const JordiDog: React.FC = () => {
+  startX: number;
+  endX: number;
+  facingRight: boolean;
+  accessoryColor: string;
+  delay: number;
+}> = ({ name, startX, endX, facingRight, accessoryColor, delay }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Run from right side
-  const runProgress = interpolate(frame, [0, 100], [0, 1], {
+  const runProgress = interpolate(frame - delay, [0, 75], [0, 1], {
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
-    easing: Easing.out(Easing.quad),
+    easing: Easing.out(Easing.cubic),
   });
 
-  const x = interpolate(runProgress, [0, 1], [2100, 1300]);
-  const bounce = Math.sin(frame * 0.6) * 12;
-  const legSwing = Math.sin(frame * 0.6) * 20;
+  const x = interpolate(runProgress, [0, 1], [startX, endX]);
+  const bounce = Math.abs(Math.sin(frame * 0.4)) * 15;
 
-  // Tail wag
-  const tailWag = Math.sin(frame * 0.8) * 25;
+  // Arm animation for hug
+  const hugProgress = interpolate(frame, [80, 100], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Tongue bounce
-  const tongueLength = 15 + Math.sin(frame * 0.4) * 5;
+  // Happy squish when hugging
+  const squish = interpolate(hugProgress, [0, 1], [1, 1.05]);
 
   return (
     <div
       style={{
         position: "absolute",
         left: x,
-        bottom: 260 + bounce,
+        bottom: 300 + bounce,
+        transform: `scaleX(${facingRight ? 1 : -1}) scale(${squish})`,
       }}
     >
-      <div style={{ position: "relative", width: 180, height: 140 }}>
-        {/* Tail */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 80,
-            left: -15,
-            width: 50,
-            height: 20,
-            background: "linear-gradient(90deg, #f4d03f, #daa520)",
-            borderRadius: "50% 20% 20% 50%",
-            transformOrigin: "right center",
-            transform: `rotate(${tailWag - 20}deg)`,
-          }}
-        />
-
+      <svg width="180" height="200" viewBox="0 0 180 200">
         {/* Body */}
-        <div
+        <ellipse cx="90" cy="150" rx="55" ry="45" fill="white" />
+        <ellipse cx="90" cy="155" rx="35" ry="28" fill="#f8f8f8" />
+
+        {/* Legs */}
+        <ellipse cx="60" cy="185" rx="22" ry="18" fill="#2d2d2d" />
+        <ellipse cx="120" cy="185" rx="22" ry="18" fill="#2d2d2d" />
+
+        {/* Arms */}
+        <ellipse
+          cx="35"
+          cy="140"
+          rx="18"
+          ry="28"
+          fill="#2d2d2d"
           style={{
-            position: "absolute",
-            bottom: 40,
-            left: 20,
-            width: 120,
-            height: 80,
-            background: "linear-gradient(180deg, #f4d03f 0%, #daa520 100%)",
-            borderRadius: "50% 60% 40% 40%",
-            border: "3px solid #b8860b",
+            transformOrigin: "35px 120px",
+            transform: `rotate(${interpolate(hugProgress, [0, 1], [20, -30])}deg)`,
           }}
         />
-
-        {/* Belly */}
-        <div
+        <ellipse
+          cx="145"
+          cy="140"
+          rx="18"
+          ry="28"
+          fill="#2d2d2d"
           style={{
-            position: "absolute",
-            bottom: 35,
-            left: 50,
-            width: 60,
-            height: 40,
-            background: "#fffef0",
-            borderRadius: "50%",
-          }}
-        />
-
-        {/* Back legs */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 25,
-            width: 25,
-            height: 45,
-            background: "#f4d03f",
-            borderRadius: "30%",
-            transformOrigin: "top center",
-            transform: `rotate(${legSwing}deg)`,
-            border: "2px solid #b8860b",
-          }}
-        />
-
-        {/* Front legs */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 100,
-            width: 25,
-            height: 50,
-            background: "#f4d03f",
-            borderRadius: "30%",
-            transformOrigin: "top center",
-            transform: `rotate(${-legSwing}deg)`,
-            border: "2px solid #b8860b",
+            transformOrigin: "145px 120px",
+            transform: `rotate(${interpolate(hugProgress, [0, 1], [-20, 30])}deg)`,
           }}
         />
 
         {/* Head */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 70,
-            left: 110,
-            width: 70,
-            height: 65,
-            background: "linear-gradient(180deg, #f4d03f 0%, #daa520 100%)",
-            borderRadius: "50% 50% 40% 40%",
-            border: "3px solid #b8860b",
-          }}
-        />
-
-        {/* Snout */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 65,
-            left: 150,
-            width: 45,
-            height: 35,
-            background: "#fffef0",
-            borderRadius: "50%",
-            border: "2px solid #b8860b",
-          }}
-        />
-
-        {/* Nose */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 85,
-            left: 175,
-            width: 18,
-            height: 14,
-            background: "#333",
-            borderRadius: "50%",
-          }}
-        />
-
-        {/* Tongue */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 55,
-            left: 165,
-            width: 15,
-            height: tongueLength,
-            background: "#ff9999",
-            borderRadius: "0 0 50% 50%",
-          }}
-        />
-
-        {/* Eyes */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 105,
-            left: 125,
-            width: 14,
-            height: 14,
-            background: "#333",
-            borderRadius: "50%",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: 2,
-              left: 2,
-              width: 5,
-              height: 5,
-              background: "white",
-              borderRadius: "50%",
-            }}
-          />
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: 105,
-            left: 155,
-            width: 14,
-            height: 14,
-            background: "#333",
-            borderRadius: "50%",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: 2,
-              left: 2,
-              width: 5,
-              height: 5,
-              background: "white",
-              borderRadius: "50%",
-            }}
-          />
-        </div>
+        <circle cx="90" cy="75" r="60" fill="white" />
 
         {/* Ears */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 110,
-            left: 105,
-            width: 25,
-            height: 40,
-            background: "#daa520",
-            borderRadius: "50% 50% 50% 50%",
-            transform: "rotate(-20deg)",
-          }}
+        <circle cx="35" cy="30" r="25" fill="#2d2d2d" />
+        <circle cx="145" cy="30" r="25" fill="#2d2d2d" />
+        <circle cx="35" cy="30" r="12" fill="#4a4a4a" />
+        <circle cx="145" cy="30" r="12" fill="#4a4a4a" />
+
+        {/* Eye patches */}
+        <ellipse cx="60" cy="70" rx="25" ry="20" fill="#2d2d2d" />
+        <ellipse cx="120" cy="70" rx="25" ry="20" fill="#2d2d2d" />
+
+        {/* Eyes - big and sparkly */}
+        <circle cx="60" cy="70" r="12" fill="white" />
+        <circle cx="120" cy="70" r="12" fill="white" />
+        <circle cx="63" cy="68" r="7" fill="#2d2d2d" />
+        <circle cx="123" cy="68" r="7" fill="#2d2d2d" />
+        {/* Eye sparkles */}
+        <circle cx="66" cy="65" r="3" fill="white" />
+        <circle cx="126" cy="65" r="3" fill="white" />
+        <circle cx="60" cy="72" r="1.5" fill="white" />
+        <circle cx="120" cy="72" r="1.5" fill="white" />
+
+        {/* Nose */}
+        <ellipse cx="90" cy="90" rx="8" ry="6" fill="#2d2d2d" />
+
+        {/* Cute smile */}
+        <path
+          d="M 75 100 Q 90 115 105 100"
+          fill="none"
+          stroke="#2d2d2d"
+          strokeWidth="3"
+          strokeLinecap="round"
         />
 
-        <div
-          style={{
-            position: "absolute",
-            bottom: 115,
-            left: 160,
-            width: 25,
-            height: 35,
-            background: "#daa520",
-            borderRadius: "50%",
-            transform: "rotate(20deg)",
-          }}
-        />
+        {/* Blush */}
+        <ellipse cx="45" cy="90" rx="12" ry="8" fill="#ffb7c5" opacity="0.7" />
+        <ellipse cx="135" cy="90" rx="12" ry="8" fill="#ffb7c5" opacity="0.7" />
 
-        {/* Collar */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 75,
-            left: 115,
-            width: 50,
-            height: 12,
-            background: "#e74c3c",
-            borderRadius: 4,
-          }}
-        />
-
-        {/* Collar tag */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 65,
-            left: 135,
-            width: 15,
-            height: 18,
-            background: "#f1c40f",
-            borderRadius: "0 0 50% 50%",
-          }}
-        />
-      </div>
+        {/* Bow/accessory */}
+        <g transform="translate(90, 20)">
+          <ellipse cx="-15" cy="0" rx="12" ry="8" fill={accessoryColor} />
+          <ellipse cx="15" cy="0" rx="12" ry="8" fill={accessoryColor} />
+          <circle cx="0" cy="0" r="6" fill={accessoryColor} />
+          <circle cx="0" cy="0" r="3" fill="white" opacity="0.5" />
+        </g>
+      </svg>
     </div>
   );
 };
 
-// Floating hearts
-const FloatingHearts: React.FC = () => {
-  const frame = useCurrentFrame();
-
-  const hearts = [
-    { x: 920, y: 400, delay: 0, size: 30 },
-    { x: 880, y: 350, delay: 10, size: 25 },
-    { x: 970, y: 380, delay: 15, size: 20 },
-    { x: 940, y: 300, delay: 25, size: 35 },
-    { x: 900, y: 280, delay: 30, size: 22 },
-  ];
-
-  return (
-    <>
-      {hearts.map((heart, i) => {
-        const progress = interpolate(frame - heart.delay, [0, 60], [0, 1], {
-          extrapolateLeft: "clamp",
-          extrapolateRight: "clamp",
-        });
-
-        const y = heart.y - progress * 100;
-        const opacity = interpolate(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
-        const scale = interpolate(progress, [0, 0.3, 1], [0.5, 1.2, 1]);
-
-        return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: heart.x + Math.sin(frame * 0.1 + i) * 10,
-              top: y,
-              fontSize: heart.size,
-              opacity,
-              transform: `scale(${scale})`,
-            }}
-          >
-            ❤️
-          </div>
-        );
-      })}
-    </>
-  );
-};
-
-// Sparkles effect
-const Sparkles: React.FC = () => {
-  const frame = useCurrentFrame();
-
-  const sparkles = [
-    { x: 850, y: 450 },
-    { x: 1000, y: 420 },
-    { x: 920, y: 500 },
-    { x: 880, y: 380 },
-    { x: 980, y: 480 },
-  ];
-
-  return (
-    <>
-      {sparkles.map((s, i) => {
-        const twinkle = Math.sin(frame * 0.2 + i * 2) > 0.3;
-        return twinkle ? (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: s.x,
-              top: s.y,
-              fontSize: 20,
-            }}
-          >
-            ✨
-          </div>
-        ) : null;
-      })}
-    </>
-  );
-};
-
-// Cute sun
-const CuteSun: React.FC = () => {
-  const frame = useCurrentFrame();
-  const pulse = 1 + Math.sin(frame * 0.05) * 0.05;
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: 60,
-        right: 120,
-        width: 120,
-        height: 120,
-        background: "radial-gradient(circle, #fff9c4 0%, #ffeb3b 50%, #ffc107 100%)",
-        borderRadius: "50%",
-        transform: `scale(${pulse})`,
-        boxShadow: "0 0 60px #ffeb3b, 0 0 100px rgba(255, 193, 7, 0.5)",
-      }}
-    >
-      {/* Sun face */}
-      <div
-        style={{
-          position: "absolute",
-          top: 40,
-          left: 30,
-          width: 12,
-          height: 12,
-          background: "#ff9800",
-          borderRadius: "50%",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: 40,
-          right: 30,
-          width: 12,
-          height: 12,
-          background: "#ff9800",
-          borderRadius: "50%",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: 65,
-          left: 35,
-          width: 50,
-          height: 25,
-          borderRadius: "0 0 50% 50%",
-          border: "4px solid #ff9800",
-          borderTop: "none",
-        }}
-      />
-    </div>
-  );
-};
-
-// Cloud component
-const Cloud: React.FC<{ x: number; y: number; size: number; delay: number }> = ({
-  x,
-  y,
-  size,
-  delay,
-}) => {
-  const frame = useCurrentFrame();
-  const drift = Math.sin((frame + delay) * 0.02) * 15;
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        left: x + drift,
-        top: y,
-        display: "flex",
-        gap: -size * 0.3,
-      }}
-    >
-      <div
-        style={{
-          width: size * 0.6,
-          height: size * 0.6,
-          background: "white",
-          borderRadius: "50%",
-          opacity: 0.9,
-        }}
-      />
-      <div
-        style={{
-          width: size,
-          height: size * 0.7,
-          background: "white",
-          borderRadius: "50%",
-          marginTop: -size * 0.2,
-          opacity: 0.9,
-        }}
-      />
-      <div
-        style={{
-          width: size * 0.5,
-          height: size * 0.5,
-          background: "white",
-          borderRadius: "50%",
-          opacity: 0.9,
-        }}
-      />
-    </div>
-  );
-};
-
-// Flower component
-const Flower: React.FC<{ x: number; y?: number; delay: number; color: string }> = ({
-  x,
-  delay,
-  color,
-}) => {
+// Kawaii Golden Retriever
+const KawaiiDog: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const sway = Math.sin((frame + delay) * 0.05) * 5;
-  const grow = spring({
-    frame: frame - delay,
+  const runProgress = interpolate(frame, [0, 90], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+
+  const x = interpolate(runProgress, [0, 1], [2200, 1350]);
+  const bounce = Math.abs(Math.sin(frame * 0.5)) * 20;
+  const tailWag = Math.sin(frame * 0.8) * 30;
+
+  const entrance = spring({
+    frame,
     fps,
     config: { damping: 15 },
   });
@@ -1011,72 +252,244 @@ const Flower: React.FC<{ x: number; y?: number; delay: number; color: string }> 
       style={{
         position: "absolute",
         left: x,
-        bottom: 280,
-        transform: `rotate(${sway}deg) scale(${Math.max(0, grow)})`,
-        transformOrigin: "bottom center",
+        bottom: 280 + bounce,
+        transform: `scale(${Math.min(1, entrance)})`,
       }}
     >
-      {/* Stem */}
-      <div
-        style={{
-          width: 4,
-          height: 40,
-          background: "#27ae60",
-          marginLeft: 13,
-        }}
-      />
-      {/* Flower head */}
-      <div
-        style={{
-          position: "absolute",
-          top: -15,
-          left: 0,
-          width: 30,
-          height: 30,
-        }}
-      >
-        {[0, 72, 144, 216, 288].map((angle) => (
-          <div
-            key={angle}
-            style={{
-              position: "absolute",
-              width: 12,
-              height: 12,
-              background: color,
-              borderRadius: "50%",
-              left: 9 + Math.cos((angle * Math.PI) / 180) * 10,
-              top: 9 + Math.sin((angle * Math.PI) / 180) * 10,
-            }}
-          />
-        ))}
-        <div
+      <svg width="220" height="180" viewBox="0 0 220 180">
+        {/* Tail */}
+        <ellipse
+          cx="25"
+          cy="80"
+          rx="30"
+          ry="12"
+          fill="#f5d78e"
           style={{
-            position: "absolute",
-            width: 10,
-            height: 10,
-            background: "#f1c40f",
-            borderRadius: "50%",
-            left: 10,
-            top: 10,
+            transformOrigin: "50px 80px",
+            transform: `rotate(${tailWag}deg)`,
           }}
         />
-      </div>
+
+        {/* Body */}
+        <ellipse cx="100" cy="110" rx="65" ry="45" fill="#f5d78e" />
+        <ellipse cx="100" cy="120" rx="45" ry="30" fill="#fff8e7" />
+
+        {/* Back legs */}
+        <ellipse cx="55" cy="155" rx="20" ry="25" fill="#f5d78e" />
+        <ellipse cx="85" cy="155" rx="20" ry="25" fill="#f5d78e" />
+
+        {/* Front legs */}
+        <ellipse cx="135" cy="155" rx="18" ry="28" fill="#f5d78e" />
+        <ellipse cx="160" cy="155" rx="18" ry="28" fill="#f5d78e" />
+
+        {/* Head */}
+        <ellipse cx="175" cy="70" rx="45" ry="40" fill="#f5d78e" />
+
+        {/* Snout */}
+        <ellipse cx="205" cy="80" rx="25" ry="20" fill="#fff8e7" />
+
+        {/* Nose */}
+        <ellipse cx="218" cy="75" rx="10" ry="8" fill="#2d2d2d" />
+        <ellipse cx="216" cy="73" rx="4" ry="3" fill="white" opacity="0.4" />
+
+        {/* Tongue */}
+        <ellipse cx="210" cy="100" rx="10" ry="15" fill="#ff9999" />
+        <path d="M 205 95 L 210 110 L 215 95" fill="#ff8080" />
+
+        {/* Eyes */}
+        <circle cx="165" cy="60" r="10" fill="white" />
+        <circle cx="190" cy="60" r="10" fill="white" />
+        <circle cx="167" cy="58" r="6" fill="#4a3728" />
+        <circle cx="192" cy="58" r="6" fill="#4a3728" />
+        <circle cx="169" cy="56" r="2.5" fill="white" />
+        <circle cx="194" cy="56" r="2.5" fill="white" />
+
+        {/* Ears */}
+        <ellipse cx="140" cy="45" rx="20" ry="35" fill="#e8c870" />
+        <ellipse cx="200" cy="40" rx="18" ry="30" fill="#e8c870" />
+
+        {/* Blush */}
+        <ellipse cx="155" cy="80" rx="10" ry="6" fill="#ffb7c5" opacity="0.6" />
+        <ellipse cx="205" cy="90" rx="8" ry="5" fill="#ffb7c5" opacity="0.6" />
+
+        {/* Collar */}
+        <rect x="150" y="95" width="50" height="12" rx="6" fill="#ff6b6b" />
+        <circle cx="175" cy="108" r="8" fill="#ffd700" />
+        <circle cx="175" cy="108" r="4" fill="#ffeb3b" />
+      </svg>
     </div>
   );
 };
 
-// Reunion text
-const ReunionText: React.FC = () => {
+// Cute floating hearts
+const CuteHearts: React.FC = () => {
+  const frame = useCurrentFrame();
+
+  const hearts = [
+    { x: 900, baseY: 350, delay: 0, size: 40, color: "#ff6b9d" },
+    { x: 950, baseY: 300, delay: 8, size: 30, color: "#ff8fab" },
+    { x: 870, baseY: 280, delay: 15, size: 35, color: "#ffb3c6" },
+    { x: 920, baseY: 230, delay: 22, size: 25, color: "#ff6b9d" },
+    { x: 980, baseY: 320, delay: 12, size: 28, color: "#ffc2d1" },
+  ];
+
+  return (
+    <>
+      {hearts.map((heart, i) => {
+        const progress = interpolate(frame - heart.delay, [0, 50], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+        });
+
+        const y = heart.baseY - progress * 120;
+        const opacity = interpolate(progress, [0, 0.2, 0.7, 1], [0, 1, 1, 0]);
+        const scale = interpolate(progress, [0, 0.3, 1], [0.3, 1.1, 0.9]);
+        const wobble = Math.sin(frame * 0.15 + i) * 8;
+
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: heart.x + wobble,
+              top: y,
+              opacity,
+              transform: `scale(${scale})`,
+            }}
+          >
+            <svg width={heart.size} height={heart.size} viewBox="0 0 24 24">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill={heart.color}
+              />
+            </svg>
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
+// Soft cloud
+const SoftCloud: React.FC<{ x: number; y: number; size: number }> = ({ x, y, size }) => {
+  const frame = useCurrentFrame();
+  const drift = Math.sin(frame * 0.015) * 20;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x + drift,
+        top: y,
+        opacity: 0.9,
+      }}
+    >
+      <svg width={size * 2} height={size} viewBox="0 0 200 100">
+        <ellipse cx="60" cy="60" rx="40" ry="35" fill="white" />
+        <ellipse cx="100" cy="50" rx="50" ry="40" fill="white" />
+        <ellipse cx="150" cy="60" rx="35" ry="30" fill="white" />
+        <ellipse cx="80" cy="70" rx="45" ry="30" fill="white" />
+        <ellipse cx="130" cy="65" rx="40" ry="32" fill="white" />
+      </svg>
+    </div>
+  );
+};
+
+// Kawaii sun
+const KawaiiSun: React.FC = () => {
+  const frame = useCurrentFrame();
+  const pulse = 1 + Math.sin(frame * 0.05) * 0.03;
+  const blinkCycle = frame % 150;
+  const isBlinking = blinkCycle > 145;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 40,
+        right: 100,
+        transform: `scale(${pulse})`,
+      }}
+    >
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        {/* Glow */}
+        <circle cx="75" cy="75" r="70" fill="#fff5b8" opacity="0.4" />
+        <circle cx="75" cy="75" r="55" fill="#ffeb99" />
+        <circle cx="75" cy="75" r="50" fill="#ffe066" />
+
+        {/* Face */}
+        {!isBlinking ? (
+          <>
+            <ellipse cx="55" cy="70" rx="6" ry="8" fill="#ff9f43" />
+            <ellipse cx="95" cy="70" rx="6" ry="8" fill="#ff9f43" />
+          </>
+        ) : (
+          <>
+            <path d="M 49 70 Q 55 75 61 70" stroke="#ff9f43" strokeWidth="3" fill="none" />
+            <path d="M 89 70 Q 95 75 101 70" stroke="#ff9f43" strokeWidth="3" fill="none" />
+          </>
+        )}
+
+        {/* Smile */}
+        <path
+          d="M 55 90 Q 75 105 95 90"
+          fill="none"
+          stroke="#ff9f43"
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+
+        {/* Blush */}
+        <ellipse cx="40" cy="85" rx="10" ry="6" fill="#ffb7c5" opacity="0.6" />
+        <ellipse cx="110" cy="85" rx="10" ry="6" fill="#ffb7c5" opacity="0.6" />
+      </svg>
+    </div>
+  );
+};
+
+// Small flower
+const SmallFlower: React.FC<{ x: number; color: string; delay: number }> = ({ x, color, delay }) => {
+  const frame = useCurrentFrame();
+  const sway = Math.sin((frame + delay) * 0.06) * 8;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        bottom: 320,
+        transform: `rotate(${sway}deg)`,
+        transformOrigin: "bottom center",
+      }}
+    >
+      <svg width="40" height="50" viewBox="0 0 40 50">
+        {/* Stem */}
+        <path d="M 20 50 Q 20 35 20 25" stroke="#5cb85c" strokeWidth="3" fill="none" />
+        {/* Petals */}
+        <circle cx="20" cy="12" r="8" fill={color} />
+        <circle cx="12" cy="18" r="8" fill={color} />
+        <circle cx="28" cy="18" r="8" fill={color} />
+        <circle cx="14" cy="10" r="8" fill={color} />
+        <circle cx="26" cy="10" r="8" fill={color} />
+        {/* Center */}
+        <circle cx="20" cy="14" r="5" fill="#ffe066" />
+      </svg>
+    </div>
+  );
+};
+
+// Cute title
+const CuteTitle: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
   const scale = spring({
     frame,
     fps,
-    config: { damping: 12 },
+    config: { damping: 10, stiffness: 80 },
   });
 
-  const opacity = interpolate(frame, [0, 20], [0, 1], {
+  const opacity = interpolate(frame, [0, 15], [0, 1], {
     extrapolateRight: "clamp",
   });
 
@@ -1084,7 +497,7 @@ const ReunionText: React.FC = () => {
     <div
       style={{
         position: "absolute",
-        top: 80,
+        top: 60,
         width: "100%",
         textAlign: "center",
         opacity,
@@ -1093,21 +506,24 @@ const ReunionText: React.FC = () => {
     >
       <h1
         style={{
-          fontFamily: "'Comic Sans MS', cursive, sans-serif",
-          fontSize: 72,
-          color: "#e74c3c",
-          textShadow: "4px 4px 0 white, 6px 6px 0 rgba(0,0,0,0.1)",
+          fontFamily: "Georgia, serif",
+          fontSize: 80,
+          fontWeight: "bold",
+          color: "#ff6b9d",
+          textShadow: "3px 3px 0 white, 5px 5px 0 rgba(255,107,157,0.3)",
           margin: 0,
+          letterSpacing: 2,
         }}
       >
         Together Again!
       </h1>
       <p
         style={{
-          fontFamily: "'Comic Sans MS', cursive, sans-serif",
-          fontSize: 32,
-          color: "#8e44ad",
-          marginTop: 10,
+          fontFamily: "Georgia, serif",
+          fontSize: 36,
+          color: "#89cff0",
+          marginTop: 8,
+          textShadow: "2px 2px 0 white",
         }}
       >
         Laura, Bido & Jordi
