@@ -113,6 +113,11 @@ export const SimpleVideo: React.FC<SimpleVideoProps> = ({ title, subtitle }) => 
         <Circle delay={15} x={-400} y={-200} size={150} />
         <Circle delay={25} x={350} y={180} size={100} />
         <Circle delay={35} x={-300} y={250} size={80} />
+
+        {/* Pulsing rings */}
+        <PulsingRing delay={20} />
+        <PulsingRing delay={40} />
+        <PulsingRing delay={60} />
       </div>
     </AbsoluteFill>
   );
@@ -149,6 +154,39 @@ const Circle: React.FC<{
         backgroundColor: "white",
         opacity,
         transform: `translate(${x}px, ${y}px) scale(${scale})`,
+      }}
+    />
+  );
+};
+
+// Pulsing ring animation that expands outward
+const PulsingRing: React.FC<{ delay: number }> = ({ delay }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const progress = interpolate(frame - delay, [0, 60], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  const scale = interpolate(progress, [0, 1], [0.5, 2]);
+  const opacity = interpolate(progress, [0, 0.3, 1], [0, 0.4, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  if (frame < delay) return null;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        width: 400,
+        height: 400,
+        borderRadius: "50%",
+        border: "3px solid white",
+        opacity,
+        transform: `scale(${scale})`,
       }}
     />
   );
