@@ -3,9 +3,10 @@ import { Player } from "@remotion/player";
 import { SimpleVideo } from "./SimpleVideo";
 import { CosmicJourney } from "./CosmicJourney";
 import { PandaReunion } from "./PandaReunion";
+import { SofaHangout } from "./SofaHangout";
 import { useState } from "react";
 
-type VideoType = "panda" | "cosmic" | "simple";
+type VideoType = "panda" | "cosmic" | "simple" | "sofa";
 
 const App = () => {
   const [activeVideo, setActiveVideo] = useState<VideoType>("panda");
@@ -32,6 +33,9 @@ const App = () => {
         </button>
         <button onClick={() => setActiveVideo("simple")} style={buttonStyle("simple")}>
           Simple Video
+        </button>
+        <button onClick={() => setActiveVideo("sofa")} style={buttonStyle("sofa")}>
+          Sofa Hangout
         </button>
       </div>
 
@@ -79,6 +83,24 @@ const App = () => {
             subtitle: "Creating videos with code",
           }}
           durationInFrames={150}
+          fps={30}
+          compositionWidth={1920}
+          compositionHeight={1080}
+          style={{
+            width: 800,
+            height: 450,
+          }}
+          controls
+          autoPlay
+          loop
+        />
+      )}
+
+      {activeVideo === "sofa" && (
+        <Player
+          component={SofaHangout}
+          inputProps={{}}
+          durationInFrames={360}
           fps={30}
           compositionWidth={1920}
           compositionHeight={1080}
