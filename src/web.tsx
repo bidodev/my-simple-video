@@ -4,9 +4,10 @@ import { SimpleVideo } from "./SimpleVideo";
 import { CosmicJourney } from "./CosmicJourney";
 import { PandaReunion } from "./PandaReunion";
 import { SofaHangout } from "./SofaHangout";
+import { SofaStory } from "./SofaStory";
 import { useState } from "react";
 
-type VideoType = "panda" | "cosmic" | "simple" | "sofa";
+type VideoType = "panda" | "cosmic" | "simple" | "sofa" | "story";
 
 const App = () => {
   const [activeVideo, setActiveVideo] = useState<VideoType>("panda");
@@ -36,6 +37,9 @@ const App = () => {
         </button>
         <button onClick={() => setActiveVideo("sofa")} style={buttonStyle("sofa")}>
           Sofa Hangout
+        </button>
+        <button onClick={() => setActiveVideo("story")} style={buttonStyle("story")}>
+          Sofa Story
         </button>
       </div>
 
@@ -101,6 +105,24 @@ const App = () => {
           component={SofaHangout}
           inputProps={{}}
           durationInFrames={360}
+          fps={30}
+          compositionWidth={1920}
+          compositionHeight={1080}
+          style={{
+            width: 800,
+            height: 450,
+          }}
+          controls
+          autoPlay
+          loop
+        />
+      )}
+
+      {activeVideo === "story" && (
+        <Player
+          component={SofaStory}
+          inputProps={{ audioEnabled: false }}
+          durationInFrames={450}
           fps={30}
           compositionWidth={1920}
           compositionHeight={1080}
