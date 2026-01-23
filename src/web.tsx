@@ -2,12 +2,13 @@ import { createRoot } from "react-dom/client";
 import { Player } from "@remotion/player";
 import { SimpleVideo } from "./SimpleVideo";
 import { CosmicJourney } from "./CosmicJourney";
+import { CosmicSofaStory } from "./CosmicSofaStory";
 import { PandaReunion } from "./PandaReunion";
 import { SofaHangout } from "./SofaHangout";
 import { SofaStory } from "./SofaStory";
 import { useState } from "react";
 
-type VideoType = "panda" | "cosmic" | "simple" | "sofa" | "story";
+type VideoType = "panda" | "cosmic" | "cosmicstory" | "simple" | "sofa" | "story";
 
 const App = () => {
   const [activeVideo, setActiveVideo] = useState<VideoType>("panda");
@@ -31,6 +32,9 @@ const App = () => {
         </button>
         <button onClick={() => setActiveVideo("cosmic")} style={buttonStyle("cosmic")}>
           Cosmic Journey
+        </button>
+        <button onClick={() => setActiveVideo("cosmicstory")} style={buttonStyle("cosmicstory")}>
+          Cosmic Sofa Story
         </button>
         <button onClick={() => setActiveVideo("simple")} style={buttonStyle("simple")}>
           Simple Video
@@ -66,6 +70,24 @@ const App = () => {
           component={CosmicJourney}
           inputProps={{}}
           durationInFrames={300}
+          fps={30}
+          compositionWidth={1920}
+          compositionHeight={1080}
+          style={{
+            width: 800,
+            height: 450,
+          }}
+          controls
+          autoPlay
+          loop
+        />
+      )}
+
+      {activeVideo === "cosmicstory" && (
+        <Player
+          component={CosmicSofaStory}
+          inputProps={{}}
+          durationInFrames={450}
           fps={30}
           compositionWidth={1920}
           compositionHeight={1080}
